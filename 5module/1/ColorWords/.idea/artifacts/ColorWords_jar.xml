@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="ColorWords:jar">
+    <output-path>$PROJECT_DIR$/out/</output-path>
+    <root id="archive" name="ColorWords.jar">
+      <element id="module-output" name="ColorWords" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="abcdeAndOthers:jar">
+    <output-path>$PROJECT_DIR$/out/</output-path>
+    <root id="archive" name="abcdeAndOthers.jar">
+      <element id="module-output" name="abcdeAndOthers" />
+    </root>
+  </artifact>
+</component>

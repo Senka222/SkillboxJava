@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="StringExperiments:jar">
+    <output-path>$PROJECT_DIR$/out/</output-path>
+    <root id="archive" name="StringExperiments.jar">
+      <element id="module-output" name="StringExperiments" />
+    </root>
+  </artifact>
+</component>
