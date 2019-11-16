@@ -5,11 +5,9 @@ public class Company
 {
     private static int sales;
     private ArrayList<Employee> staff = new ArrayList<>();
-//    staff.sort(new EmployeeComparator());  сюда хотел
 
     public void getTopSalaryStaff(int count)
     {
-        staff.sort(new EmployeeComparator()); //не понимаю почему не работает вне метода
 
         List<Employee> topSalaryStaff = staff.subList(staff.size() - count, staff.size());
         System.out.println("Самые большие зарплаты:");
@@ -21,7 +19,6 @@ public class Company
 
     public void getLowestSalaryStaff(int count)
     {
-        staff.sort(new EmployeeComparator()); //не понимаю почему не работает вне метода
 
         List<Employee> lowestSalaryStaff = staff.subList(0, count);
 
@@ -36,11 +33,13 @@ public class Company
     public void hireStaff(int number, Employee person)
     {
         this.staff.add(number, person);
+        staff.sort(new EmployeeComparator());
     }
 
     public void layOffStaff(int number)
     {
         this.staff.remove(number);
+        staff.sort(new EmployeeComparator());
     }
 
     public ArrayList<Employee> getStaff() {
