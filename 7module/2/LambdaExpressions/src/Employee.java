@@ -1,15 +1,13 @@
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Employee
 {
     private String name;
     private Integer salary;
-    private LocalDate workStart;
+    private Date workStart;
 
-    public Employee(String name, Integer salary, LocalDate workStart)
+    public Employee(String name, Integer salary, Date workStart)
     {
         this.name = name;
         this.salary = salary;
@@ -32,16 +30,17 @@ public class Employee
         this.salary = salary;
     }
 
-    public LocalDate getWorkStart() {
+    public Date getWorkStart() {
         return workStart;
     }
 
-    public void setWorkStart(LocalDate workStart) {
+    public void setWorkStart(Date workStart) {
         this.workStart = workStart;
     }
 
     public String toString()
     {
-        return name + " - " + salary + " - " + workStart.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        return name + " - " + salary + " - " +
+            (new SimpleDateFormat("dd.MM.yyyy")).format(workStart);
     }
 }

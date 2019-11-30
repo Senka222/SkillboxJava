@@ -1,22 +1,25 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class Main
 {
     private static String staffFile = "data/staff.txt";
-    private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static String dateFormat = "dd.MM.yyyy";
 
     public static void main(String[] args)
     {
         ArrayList<Employee> staff = loadStaffFromFile();
 
-        staff.stream().filter(e -> e.getWorkStart().getYear() == 2017)
+        staff.stream().filter(employee -> employee.getWorkStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear() == 2017)
                 .max(Comparator.comparing(Employee::getSalary)).ifPresent(System.out::println);
     }
 
@@ -36,7 +39,7 @@ public class Main
                 staff.add(new Employee(
                     fragments[0],
                     Integer.parseInt(fragments[1]),
-                    LocalDate.parse(fragments[2], dateFormat)
+                    (new SimpleDateFormat(dateFormat)).parse(fragments[2])
                 ));
             }
         }
