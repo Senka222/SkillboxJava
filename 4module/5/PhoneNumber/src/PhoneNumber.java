@@ -11,7 +11,7 @@ public class PhoneNumber
 
         while (phoneNumber.length() < 10 || phoneNumber.length() >11){
             System.out.println("Вы ввели неправильный номер, попробуйте ещё раз:");
-            phoneNumber = scanner.nextLine().replaceAll("[^0-9]", "");;
+            phoneNumber = scanner.nextLine().replaceAll("[^0-9]", "");
         }
 
         if (phoneNumber.length() == 10){
