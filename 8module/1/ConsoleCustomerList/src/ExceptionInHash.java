@@ -1,4 +1,4 @@
-public class ExceptionInHash extends Exception {
+public class ExceptionInHash extends RuntimeException {
 
     public ExceptionInHash(String message) {
         super(message);
