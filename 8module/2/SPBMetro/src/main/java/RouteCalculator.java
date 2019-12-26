@@ -88,10 +88,12 @@ public class RouteCalculator
 
     private List<Station> getRouteWithOneConnection(Station from, Station to)
     {
-        if(from.getLine().equals(to.getLine())) {
-            return null;
+
+        if(from.getLine().equals(to.getLine())) {                   //эта проверка, наверно, нужна только если метод использовать
+            return null;                                            //где то отдельно, здесь же предыдущий проверяет тоже самое
         }
 
+        boolean lineIsConnectedWithOneConnection = false;
         ArrayList<Station> route = new ArrayList<>();
 
         List<Station> fromLineStations = from.getLine().getStations();
@@ -110,8 +112,16 @@ public class RouteCalculator
                         route.clear();
                         route.addAll(way);
                     }
+                    if (!lineIsConnectedWithOneConnection)
+                    {
+                        lineIsConnectedWithOneConnection = true;
+                    }
                 }
             }
+        }
+        if (!lineIsConnectedWithOneConnection)
+        {
+            return null;
         }
         return route;
     }
