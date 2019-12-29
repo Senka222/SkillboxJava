@@ -90,8 +90,8 @@ public class RouteCalculatorTest extends TestCase {
 
     public void testGetShortestRouteOnTheTwoLines()
     {
-        List<Station> actual = routeCalculator.getShortestRoute(stationIndex.getStation("First",1),
-                stationIndex.getStation("Fifth",2));
+        List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("First"),
+                getStationForTest("Fifth"));
         List<Station> expected = buildRoute("First", "Second", "Third", "Fourth", "Fifth");
         assertEquals(expected, actual);
     }
