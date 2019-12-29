@@ -54,9 +54,10 @@ public class RouteCalculator
 
     private List<Station> getRouteOnTheLine(Station from, Station to)
     {
-        if(!from.getLine().equals(to.getLine())) {
+        if(!isSameLine(from, to)) {
             return null;
         }
+
         ArrayList<Station> route = new ArrayList<>();
         List<Station> stations = from.getLine().getStations();
         int direction = 0;
@@ -89,10 +90,10 @@ public class RouteCalculator
     private List<Station> getRouteWithOneConnection(Station from, Station to)
     {
 
-        if(from.getLine().equals(to.getLine())) {                   //эта проверка, наверно, нужна только если метод использовать
+/*        if(isSameLine(from, to)) {                   //эта проверка, наверно, нужна только если метод использовать
             return null;                                            //где то отдельно, здесь же предыдущий проверяет тоже самое
         }
-
+*/
         boolean lineIsConnectedWithOneConnection = false;
         ArrayList<Station> route = new ArrayList<>();
 
@@ -143,17 +144,17 @@ public class RouteCalculator
                 if(srcStation.getLine().equals(dstStation.getLine())) {
                     return getRouteOnTheLine(srcStation, dstStation);
                 }
-            }
+            }                       //почему не покрывается эта скобка вообще не понимаю
         }
         return null;
     }
 
     private List<Station> getRouteWithTwoConnections(Station from, Station to)
     {
-        if (from.getLine().equals(to.getLine())) {
+/*        if (isSameLine(from, to)) {
             return null;
         }
-
+*/
         ArrayList<Station> route = new ArrayList<>();
 
         List<Station> fromLineStations = from.getLine().getStations();
@@ -180,5 +181,10 @@ public class RouteCalculator
         }
 
         return route;
+    }
+
+    private boolean isSameLine(Station from, Station to)
+    {
+        return from.getLine().equals(to.getLine());
     }
 }

@@ -1,82 +1,89 @@
 import core.Line;
 import core.Station;
 import junit.framework.TestCase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+/**
+ * Metro scheme that used in tests:
+ * <pre>{@code
+ *           (First line)(Third line)
+ *                1           7
+ *                v           ^
+ * (Second line) 2/3 -> 4 -> 5/6
+ * }</pre>
+ */
 
 public class RouteCalculatorTest extends TestCase {
 
     StationIndex stationIndex;
     RouteCalculator routeCalculator;
 
-    @Override
-    protected void setUp() throws Exception {  // можно ли это заменить на BeforeClass?
+    @BeforeClass
+    protected void setUp() throws Exception {
 
         stationIndex = new StationIndex();
-        Line line1 = new Line(1, "First Line");
-        Line line2 = new Line(2, "Second Line");
-        Line line3 = new Line(3, "Third Line");
 
-        stationIndex.addLine(line1);
-        stationIndex.addLine(line2);
-        stationIndex.addLine(line3);
+        addLineToIndexInTest("First line", 1);
+        addLineToIndexInTest("Second line", 2);
+        addLineToIndexInTest("Third line", 3);
 
-        Station station1 = new Station("First", line1);
-        Station station2 = new Station("Second", line1);
-        Station station3 = new Station("Third", line2);
-        Station station4 = new Station("Fourth", line2);
-        Station station5 = new Station("Fifth", line2);
-        Station station6 = new Station("Sixth", line3);
-        Station station7 = new Station("Seventh", line3);
+        addStationToIndexInTest("First", 1);
+        addStationToIndexInTest("Second", 1);
+        addStationToIndexInTest("Third", 2);
+        addStationToIndexInTest("Fourth", 2);
+        addStationToIndexInTest("Fifth", 2);
+        addStationToIndexInTest("Sixth", 3);
+        addStationToIndexInTest("Seventh", 3);
 
-        stationIndex.addStation(station1);  //чот не сообразил, можно ли их добавить через цикл
-        stationIndex.addStation(station2);
-        stationIndex.addStation(station3);
-        stationIndex.addStation(station4);
-        stationIndex.addStation(station5);
-        stationIndex.addStation(station6);
-        stationIndex.addStation(station7);
-
-        line1.addStation(station1);
-        line1.addStation(station2);
-        line2.addStation(station3);
-        line2.addStation(station4);
-        line2.addStation(station5);
-        line3.addStation(station6);
-        line3.addStation(station7);
-
-        List<Station> firstConnection = new ArrayList<>();
-        List<Station> secondConnection = new ArrayList<>();
-
-        firstConnection.add(station2);
-        firstConnection.add(station3);
-        secondConnection.add(station5);
-        secondConnection.add(station6);
-
-        stationIndex.addConnection(firstConnection);
-        stationIndex.addConnection(secondConnection);
+        addConnectionToIndexInTest("Second", "Third");
+        addConnectionToIndexInTest("Fifth", "Sixth");
 
         routeCalculator = new RouteCalculator(stationIndex);
     }
 
-    @Test                                       //нужно ли писать аннотацию? если да, то один раз или перед каждым тестом?
-/*    public void testCalculateDuration()
+    protected void addLineToIndexInTest(String name, int number)
     {
-        double actual = RouteCalculator.calculateDuration(route);
-        double expected = 14.5;
+        Line line = new Line(number, name);
+        stationIndex.addLine(line);
+    }
+
+    private void addStationToIndexInTest(String name, int lineNumber)
+    {
+        Station station = new Station(name, stationIndex.getLine(lineNumber));
+        stationIndex.getLine(lineNumber).addStation(station);
+        stationIndex.addStation(station);
+    }
+
+    private void addConnectionToIndexInTest(String... stationName)
+    {
+        List<Station> connection = new ArrayList<>();
+        for (String s : stationName) {
+            connection.add(stationIndex.getStation(s));
+        }
+        stationIndex.addConnection(connection);
+    }
+
+    @Test                                       //нужно ли писать аннотацию? если да, то один раз или перед каждым тестом?
+    public void testCalculateDuration()
+    {
+
+        double actual = RouteCalculator.calculateDuration(routeCalculator.getShortestRoute(getStationForTest("First"),
+                getStationForTest("Fourth")));
+        double expected = 8.5;
         assertEquals(expected, actual);
     }
-*/
+
     public void testGetShortestRouteOnTheLine()
     {
-        List<Station> actual = routeCalculator.getShortestRoute(stationIndex.getStation("Third",2),
-                stationIndex.getStation("Fifth",2));
-        List<Station> expected = new ArrayList<>();
-        expected.add(stationIndex.getStation("Third",2));
-        expected.add(stationIndex.getStation("Fourth",2));
-        expected.add(stationIndex.getStation("Fifth",2));
+        List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("Third"),
+                getStationForTest("Fifth"));
+        List<Station> expected = buildRoute("Third", "Fourth", "Fifth");
 
         assertEquals(expected, actual);
     }
@@ -85,46 +92,61 @@ public class RouteCalculatorTest extends TestCase {
     {
         List<Station> actual = routeCalculator.getShortestRoute(stationIndex.getStation("First",1),
                 stationIndex.getStation("Fifth",2));
-        List<Station> expected = new ArrayList<>();
-
-        expected.add(stationIndex.getStation("First",1));
-        expected.add(stationIndex.getStation("Second",1));
-        expected.add(stationIndex.getStation("Third",2));
-        expected.add(stationIndex.getStation("Fourth",2));
-        expected.add(stationIndex.getStation("Fifth",2));
-
+        List<Station> expected = buildRoute("First", "Second", "Third", "Fourth", "Fifth");
         assertEquals(expected, actual);
     }
 
     public void testGetShortestRouteOnTheThreeLines()
     {
-        List<Station> actual = routeCalculator.getShortestRoute(stationIndex.getStation("First",1),
-                stationIndex.getStation("Seventh",3));
-        List<Station> expected = new ArrayList<>();
-
-        expected.add(stationIndex.getStation("First",1));
-        expected.add(stationIndex.getStation("Second",1));
-        expected.add(stationIndex.getStation("Third",2));
-        expected.add(stationIndex.getStation("Fourth",2));
-        expected.add(stationIndex.getStation("Fifth",2));
-        expected.add(stationIndex.getStation("Sixth",3));
-        expected.add(stationIndex.getStation("Seventh",3));
+        List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("First"),
+                getStationForTest("Seventh"));
+        List<Station> expected = buildRoute("First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh");
 
         assertEquals(expected, actual);
     }
 
     public void testOnConnectedStations()
     {
-        List<Station> actual = routeCalculator.getShortestRoute(stationIndex.getStation("Second",1),
-                stationIndex.getStation("Third",2));
-        List<Station> expected = new ArrayList<>();
-        expected.add(stationIndex.getStation("Second",1));
-        expected.add(stationIndex.getStation("Third",2));
+        List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("Second"),
+                getStationForTest("Third"));
+        List<Station> expected = buildRoute("Second", "Third");
 
         assertEquals(expected, actual);
     }
 
-    @Override
+    public void testReverseDirection()
+    {
+        List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("Seventh"),
+                getStationForTest("Fourth"));
+        List<Station> expected = buildRoute("Seventh", "Sixth", "Fifth", "Fourth");
+
+        assertEquals(expected, actual);
+    }
+
+    public void testSameStations()
+    {
+        List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("First"),
+                getStationForTest("First"));
+        List<Station> expected = buildRoute("First");
+        assertEquals(expected,actual);
+    }
+
+    private Station getStationForTest (String stationName)
+    {
+        return stationIndex.getStation(stationName);
+    }
+
+    private List<Station> buildRoute(String... stationName)
+    {
+        List<Station> route = new ArrayList<>();
+        for (String s: stationName)
+        {
+            route.add(stationIndex.getStation(s));
+        }
+        return route;
+    }
+
+    @AfterClass
     protected void tearDown() throws Exception {
         super.tearDown();
     }
