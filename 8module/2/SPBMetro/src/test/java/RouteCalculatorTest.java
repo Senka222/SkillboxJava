@@ -1,13 +1,13 @@
 import core.Line;
 import core.Station;
-import junit.framework.TestCase;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Metro scheme that used in tests:
@@ -19,12 +19,12 @@ import java.util.List;
  * }</pre>
  */
 
-public class RouteCalculatorTest extends TestCase {
+public class RouteCalculatorTest{
 
     StationIndex stationIndex;
     RouteCalculator routeCalculator;
 
-    @BeforeClass
+    @BeforeEach
     protected void setUp() throws Exception {
 
         stationIndex = new StationIndex();
@@ -69,17 +69,17 @@ public class RouteCalculatorTest extends TestCase {
         stationIndex.addConnection(connection);
     }
 
-    @Test                                       //нужно ли писать аннотацию? если да, то один раз или перед каждым тестом?
-    public void testCalculateDuration()
+    @Test
+    public void CalculateDuration()
     {
-
         double actual = RouteCalculator.calculateDuration(routeCalculator.getShortestRoute(getStationForTest("First"),
                 getStationForTest("Fourth")));
         double expected = 8.5;
         assertEquals(expected, actual);
     }
 
-    public void testGetShortestRouteOnTheLine()
+    @Test
+    public void GetShortestRouteOnTheLine()
     {
         List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("Third"),
                 getStationForTest("Fifth"));
@@ -88,7 +88,8 @@ public class RouteCalculatorTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testGetShortestRouteOnTheTwoLines()
+    @Test
+    public void GetShortestRouteOnTheTwoLines()
     {
         List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("First"),
                 getStationForTest("Fifth"));
@@ -96,6 +97,7 @@ public class RouteCalculatorTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testGetShortestRouteOnTheThreeLines()
     {
         List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("First"),
@@ -105,7 +107,8 @@ public class RouteCalculatorTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testOnConnectedStations()
+    @Test
+    public void OnConnectedStations()
     {
         List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("Second"),
                 getStationForTest("Third"));
@@ -114,7 +117,8 @@ public class RouteCalculatorTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testReverseDirection()
+    @Test
+    public void ReverseDirection()
     {
         List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("Seventh"),
                 getStationForTest("Fourth"));
@@ -123,7 +127,8 @@ public class RouteCalculatorTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testSameStations()
+    @Test
+    public void SameStations()
     {
         List<Station> actual = routeCalculator.getShortestRoute(getStationForTest("First"),
                 getStationForTest("First"));
@@ -146,8 +151,7 @@ public class RouteCalculatorTest extends TestCase {
         return route;
     }
 
-    @AfterClass
+    @AfterEach
     protected void tearDown() throws Exception {
-        super.tearDown();
     }
 }
