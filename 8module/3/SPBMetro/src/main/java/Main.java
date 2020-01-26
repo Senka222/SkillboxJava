@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,7 +15,9 @@ import java.util.Scanner;
 
 public class Main
 {
-    private static Logger logger;
+    private static Logger missStationLog;
+    private static Logger lookingForStations;
+    private static Logger exceptionLog;
 
     private static String dataFile = "src/main/resources/map.json";
     private static Scanner scanner;
@@ -23,13 +26,16 @@ public class Main
 
     public static void main(String[] args)
     {
+
+        missStationLog = LogManager.getLogger("missedStations");
+        lookingForStations = LogManager.getLogger("lookForStations");
+        exceptionLog = LogManager.getRootLogger();
+
         RouteCalculator calculator = getRouteCalculator();
-        logger = LogManager.getRootLogger();
 
         System.out.println("Программа расчёта маршрутов метрополитена Санкт-Петербурга\n");
         scanner = new Scanner(System.in);
-        for(;;)
-        {
+        for (; ; ) {
             Station from = takeStation("Введите станцию отправления:");
             Station to = takeStation("Введите станцию назначения:");
 
@@ -38,8 +44,9 @@ public class Main
             printRoute(route);
 
             System.out.println("Длительность: " +
-                RouteCalculator.calculateDuration(route) + " минут");
-        }
+                    RouteCalculator.calculateDuration(route) + " минут");
+            }
+
     }
 
     private static RouteCalculator getRouteCalculator()
@@ -76,9 +83,10 @@ public class Main
             String line = scanner.nextLine().trim();
             Station station = stationIndex.getStation(line);
             if(station != null) {
+                lookingForStations.info("Искали станцию: " + line);
                 return station;
             }
-            logger.info("Станция не нейдена:" + line);
+            missStationLog.info("Станция не нейдена: " + line);
             System.out.println("Станция не найдена :(");
         }
     }
@@ -101,6 +109,7 @@ public class Main
             parseConnections(connectionsArray);
         }
         catch(Exception ex) {
+            exceptionLog.error("Ошибка в парсере: ", ex);
             ex.printStackTrace();
         }
     }
@@ -165,6 +174,7 @@ public class Main
             lines.forEach(line -> builder.append(line));
         }
         catch (Exception ex) {
+            exceptionLog.error("Файл со станциями не найден!", ex);
             ex.printStackTrace();
         }
         return builder.toString();
