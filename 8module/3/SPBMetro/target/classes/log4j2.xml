@@ -1,29 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="WARN">
     <appenders>
+        <Console name="CONSOLE">
+            <PatternLayout pattern="%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
 
-        <File name="missedStationsLog" fileName="logs/missedStations.log" immediateFlush="true">
-            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        <File name="INVALID_STATION" fileName="logs/invalidStation.log" >
+            <PatternLayout>
+                <pattern>%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</pattern>
+            </PatternLayout>
+            <Filters>
+                <MarkerFilter marker ="INVALID_STATION" />
+            </Filters>
         </File>
-        <File name="lookForStationsLog" fileName="logs/lookForStations.log" immediateFlush="true">
-            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+
+        <File name="INPUT_HISTORY" fileName="logs/inputHistory.log" >
+            <PatternLayout>
+                <pattern>%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</pattern>
+            </PatternLayout>
+            <Filters>
+                <MarkerFilter marker ="INPUT_HISTORY" />
+            </Filters>
         </File>
-        <File name="exceptionsLog" fileName="logs/exceptions.log" immediateFlush="true">
-            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+
+        <File name="EXCEPTION" fileName="logs/exceptions.log" >
+            <PatternLayout>
+                <pattern>%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</pattern>
+            </PatternLayout>
+            <Filters>
+                <MarkerFilter marker ="EXCEPTION" />
+            </Filters>
         </File>
 
     </appenders>
     <loggers>
 
-        <logger name="missedStations" level="info">
-            <appender-ref ref="missedStationsLog"/>
-        </logger>
-        <logger name="lookForStations" level="info">
-            <appender-ref ref="lookForStationsLog"/>
-        </logger>
-
-        <root level="error">                 //всегда ли нужен рутлогер?
-            <appender-ref ref="exceptionsLog"/>
+        <root level="all">
+            <appender-ref ref="INVALID_STATION" level="info"/>
+            <appender-ref ref="INPUT_HISTORY" level="info"/>
+            <appender-ref ref="EXCEPTION" level="error"/>
         </root>
     </loggers>
 </configuration>

@@ -2,10 +2,11 @@ import core.Line;
 import core.Station;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,9 +16,12 @@ import java.util.Scanner;
 
 public class Main
 {
-    private static Logger missStationLog;
-    private static Logger lookingForStations;
-    private static Logger exceptionLog;
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
+
+    private static final Marker INPUT_HISTORY_MARKER = MarkerManager.getMarker("INPUT_HISTORY");
+    private static final Marker INVALID_STATION_MARKER = MarkerManager.getMarker("INVALID_STATION");
+    private static final Marker EXCEPTIONS_MARKER = MarkerManager.getMarker("EXCEPTION");
+
 
     private static String dataFile = "src/main/resources/map.json";
     private static Scanner scanner;
@@ -27,9 +31,6 @@ public class Main
     public static void main(String[] args)
     {
 
-        missStationLog = LogManager.getLogger("missedStations");
-        lookingForStations = LogManager.getLogger("lookForStations");
-        exceptionLog = LogManager.getRootLogger();
 
         RouteCalculator calculator = getRouteCalculator();
 
@@ -83,10 +84,10 @@ public class Main
             String line = scanner.nextLine().trim();
             Station station = stationIndex.getStation(line);
             if(station != null) {
-                lookingForStations.info("Искали станцию: " + line);
+                LOGGER.info(INPUT_HISTORY_MARKER,"Пользователь ввел станцию \"{}\"", station);
                 return station;
             }
-            missStationLog.info("Станция не нейдена: " + line);
+            LOGGER.info(INVALID_STATION_MARKER,"Пользователь пытался найти станцию \"{}\"", line);
             System.out.println("Станция не найдена :(");
         }
     }
@@ -109,8 +110,7 @@ public class Main
             parseConnections(connectionsArray);
         }
         catch(Exception ex) {
-            exceptionLog.error("Ошибка в парсере: ", ex);
-            ex.printStackTrace();
+            LOGGER.error(EXCEPTIONS_MARKER, "JSON file ERROR", ex);
         }
     }
 
@@ -174,8 +174,7 @@ public class Main
             lines.forEach(line -> builder.append(line));
         }
         catch (Exception ex) {
-            exceptionLog.error("Файл со станциями не найден!", ex);
-            ex.printStackTrace();
+            LOGGER.error(EXCEPTIONS_MARKER, "JSON file ERROR", ex);
         }
         return builder.toString();
     }
