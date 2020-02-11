@@ -1,8 +1,13 @@
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 
 public class Main {
+
     public static void main(String[] args) {
 
         long size;
@@ -10,38 +15,44 @@ public class Main {
 
         System.out.println("Введите абсолютный путь папки:" +
                 "\nПример: C:/users");
-        String inputPath = scanner.nextLine();
+        Path inputPath = Paths.get(scanner.nextLine());
 
-        while (!inputPath.matches("[C-Z]:\\/[a-zA-Z0-9\\/]+")) {
+        while (!inputPath.toFile().isDirectory()) {
             System.out.println("Вы ввели неправильный путь, попробуйте ещё раз:");
-            inputPath = scanner.nextLine();
+            inputPath = Paths.get(scanner.nextLine());
         }
-//        String inputPath = "C:/";
 
-        File folder = new File(inputPath);
+//       Path inputPath = Paths.get("C:/Users/senka/");
+
+        try {
+            Files.walkFileTree(inputPath, new MyFileVisitor());
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
+        }
+        File folder = new File(inputPath.toString());
         size = sizeOfFolder(folder);    //лучше ли будет если использовать меньше переменных и просто пихать модули один в другой?
         String sizeForPrint = FileUtils.byteCountToDisplaySize(size);
         System.out.println("Размер указанной папки: " + sizeForPrint);
+        String sizeForPrintFromVisitor = FileUtils.byteCountToDisplaySize(MyFileVisitor.getSize());
+        System.out.println("Размер указанной папки через FileVisitor: " + sizeForPrintFromVisitor);
     }
 
     public static long sizeOfFolder(File folder) {
 
         File[] files = folder.listFiles();
+        int count = 0;
         long size = 0;
-        assert files != null; // это я так понимаю проверка на то чтобы файл не был равен 0
-        int count = files.length;
+        if (files != null) {
+            count = files.length;
+        }
 
         for (int i = 0 ; i < count ; i++) {
-            try {
                 if (files[i].isFile()) {
                     size += files[i].length();
                 } else {
                     size += sizeOfFolder(files[i]);
                 }
-            }
-            catch (NullPointerException ex){
-                System.out.println("Невозможно получить доступ к файлу: " + files[i]);
-            }
         }
         return size;
     }
